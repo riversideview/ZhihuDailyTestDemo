@@ -61,14 +61,14 @@ class MainViewController: UIViewController, SDCycleScrollViewDelegate, ParallaxH
         
         
     }
-    
+    var git = 1
     //配置视图属性
     func setup() {
         self.automaticallyAdjustsScrollViewInsets = false
         self.navigationController?.navigationBar.lt_setBackgroundColor(UIColor.clearColor())
         self.navigationController?.navigationBar.shadowImage = UIImage()
         
-        //设置状态栏字体颜色
+        //设置状态栏字体的颜色
         self.navigationController?.navigationBar.barStyle = .BlackTranslucent
         self.tableView.rowHeight = UITableViewAutomaticDimension
         
