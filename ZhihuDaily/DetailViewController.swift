@@ -117,7 +117,7 @@ class DetailViewController: UIViewController, UIScrollViewDelegate, ParallaxHead
         
         
     }
-    //配置视图属性
+    //配置视图基本属性
     func setup() {
         //避免因含有navBar而对scrollInsets做自动调整
         self.automaticallyAdjustsScrollViewInsets = false
@@ -128,6 +128,8 @@ class DetailViewController: UIViewController, UIScrollViewDelegate, ParallaxHead
         //将返回按钮主题色设置为白色
         self.navigationController?.navigationBar.tintColor = UIColor.whiteColor()
         self.navigationController?.navigationBar.lt_setBackgroundColor(UIColor.clearColor())
+        
+        //设置webView的代理
         self.webView.delegate = self
         
         //对scrollView做基本配置
