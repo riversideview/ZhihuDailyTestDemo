@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="9057" systemVersion="15B42" minimumToolsVersion="Xcode 7.0">
+    <entity name="Launch" representedClassName=".Launch" syncable="YES">
+        <attribute name="copyright" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="startImage" optional="YES" attributeType="Transformable" valueTransformerName="ZhihuDaily.ImageTransformer" syncable="YES"/>
+    </entity>
+    <entity name="List" representedClassName=".List" syncable="YES">
+        <attribute name="id" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="image" optional="YES" attributeType="Transformable" valueTransformerName="ZhihuDaily.ImageTransformer" syncable="YES"/>
+        <attribute name="title" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="main" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Main" inverseName="list" inverseEntity="Main" syncable="YES"/>
+    </entity>
+    <entity name="Main" representedClassName=".Main" syncable="YES">
+        <relationship name="list" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="List" inverseName="main" inverseEntity="List" syncable="YES"/>
+        <relationship name="top" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="Top" inverseName="mian" inverseEntity="Top" syncable="YES"/>
+    </entity>
+    <entity name="Top" representedClassName=".Top" syncable="YES">
+        <attribute name="id" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="image" optional="YES" attributeType="Transformable" valueTransformerName="ZhihuDaily.ImageTransformer" syncable="YES"/>
+        <attribute name="title" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="mian" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Main" inverseName="top" inverseEntity="Main" syncable="YES"/>
+    </entity>
+    <elements>
+        <element name="Launch" positionX="-54" positionY="-9" width="128" height="75"/>
+        <element name="Top" positionX="-54" positionY="9" width="128" height="105"/>
+        <element name="List" positionX="-45" positionY="18" width="128" height="105"/>
+        <element name="Main" positionX="-27" positionY="45" width="128" height="75"/>
+    </elements>
+</model>
