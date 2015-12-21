@@ -144,7 +144,7 @@ class DetailViewController: UIViewController, UIScrollViewDelegate, ParallaxHead
     
     //配置顶部主题图
     func setTopImageView() {
-        //将statusBar背景色置为透明
+        //将statusBar的背景色置为透明
         statusBarBackgroundView.backgroundColor = UIColor.clearColor()
 
         
