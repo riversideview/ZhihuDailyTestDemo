@@ -61,7 +61,7 @@ class MainViewController: UIViewController, SDCycleScrollViewDelegate, ParallaxH
         
         
     }
-    var git = 1
+    
     //配置视图属性
     func setup() {
         self.automaticallyAdjustsScrollViewInsets = false
