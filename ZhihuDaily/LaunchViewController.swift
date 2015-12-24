@@ -22,7 +22,7 @@ class LaunchViewController: UIViewController, SKSplashDelegate  {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+       
         getCache()
         launchImage()
         getLaunchData()
@@ -128,11 +128,6 @@ class LaunchViewController: UIViewController, SKSplashDelegate  {
         self.view.bringSubviewToFront(logoImage)
         self.view.bringSubviewToFront(copyrightLabel)
 
-    }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
     }
     
     //跳转到主界面

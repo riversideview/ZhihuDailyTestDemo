@@ -11,7 +11,6 @@ import CoreData
 import Alamofire
 import SwiftyJSON
 import LTNavigationBar
-
 import ZFDragableModalTransition
 
 class DetailViewController: UIViewController, UIScrollViewDelegate, ParallaxHeaderViewDelegate, UIGestureRecognizerDelegate, UIWebViewDelegate {
@@ -117,8 +116,13 @@ class DetailViewController: UIViewController, UIScrollViewDelegate, ParallaxHead
         
         
     }
+    func scroll() {
+        print("scroll")
+    }
     //配置视图基本属性
     func setup() {
+        let gesture = ZFDetectScrollViewEndGestureRecognizer(target: self, action: "scroll")
+        self.view.addGestureRecognizer(gesture)
         //避免因含有navBar而对scrollInsets做自动调整
         self.automaticallyAdjustsScrollViewInsets = false
         

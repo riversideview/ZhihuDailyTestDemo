@@ -24,17 +24,15 @@ class MainViewController: UIViewController, SDCycleScrollViewDelegate, ParallaxH
             return appDelegate.coreDataStack
         }
     }
-    var animator: ZFModalTransitionAnimator = ZFModalTransitionAnimator()
+    //转场动画器
+    var animator: ZFModalTransitionAnimator!
+    //顶部轮播
     var mianScrollView: SDCycleScrollView!
+    //数据模型
     var main: [Main]!
     var top: [Top]!
     var list: [List]!
-//    var detailViewController: DetailViewController {
-//        get {
-//            
-//            return self.storyboard?.instantiateViewControllerWithIdentifier("DetailViewController") as! DetailViewController
-//        }
-//    }
+    var id = ""
     
     //顶部轮播图片及标题数组
     var images: [AnyObject]! = []
@@ -46,24 +44,43 @@ class MainViewController: UIViewController, SDCycleScrollViewDelegate, ParallaxH
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        
+        
+        slowLoadView()
+        setup()
+        getNewsData()
+        setTopScrollView()
+        
+    }
+    
+    //当网络慢的时候,无法及时为界面提供数据时候,添加一个监听
+    func slowLoadView() {
+        let center = NSNotificationCenter.defaultCenter()
+        let queue = NSOperationQueue.mainQueue()
+        let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
+        
+        center.addObserverForName("top", object: appDelegate, queue: queue) { (notification: NSNotification) -> Void in
+            print("get the notification")
+            self.setup()
+            self.getNewsData()
+            self.setTopScrollView()
+            self.tableView.reloadData()
+        }
+    }
+    
+    deinit {
+        print("main released")
+    }
+    //配置视图属性
+    func setup() {
+        //创建边栏控制器并添加滑动手势
         let rvc = self.revealViewController()
         self.view.addGestureRecognizer(rvc.panGestureRecognizer())
         self.view.addGestureRecognizer(rvc.tapGestureRecognizer())
         sideMenuButton.target = rvc
         sideMenuButton.action = Selector("revealToggle:")
         
-        setup()
-        getNewsData()
-        setTopScrollView()
-        
-        
-
-        
-        
-    }
-    
-    //配置视图属性
-    func setup() {
+        //设置自动建议为false
         self.automaticallyAdjustsScrollViewInsets = false
         self.navigationController?.navigationBar.lt_setBackgroundColor(UIColor.clearColor())
         self.navigationController?.navigationBar.shadowImage = UIImage()
@@ -109,16 +126,23 @@ class MainViewController: UIViewController, SDCycleScrollViewDelegate, ParallaxH
         
         let topRequest = NSFetchRequest(entityName: "Top")
         let listRequest = NSFetchRequest(entityName: "List")
+        
         do {
             
             let topResults = try coreDataStack.context.executeFetchRequest(topRequest) as! [Top]
             top = topResults
 //            print(top.count)
             //为顶部轮播准备数据
-            for t in top {
-                images.append(t.image!)
-                titles.append(t.title!)
-            }
+            
+                for t in top {
+                    if let image = t.image, title = t.title {
+                        images.append(image)
+                        titles.append(title)
+                    }
+//                    images.append(t.image!)
+//                    titles.append(t.title!)
+                }
+            
             let listResults = try coreDataStack.context.executeFetchRequest(listRequest) as! [List]
             list = listResults
         } catch let error as NSError {
@@ -131,8 +155,10 @@ class MainViewController: UIViewController, SDCycleScrollViewDelegate, ParallaxH
     func lockContentOffsetTopY() {
         self.tableView.contentOffset.y = -75
     }
-    //MARK: 顶部滚动栏点击事件
+    
+//MARK: 顶部滚动栏点击事件
     func cycleScrollView(cycleScrollView: SDCycleScrollView!, didSelectItemAtIndex index: Int) {
+        
         let id = top[index].id!
         self.id = id
         customTransition(id)
@@ -145,22 +171,22 @@ class MainViewController: UIViewController, SDCycleScrollViewDelegate, ParallaxH
         detailViewController.id = id
         animator = ZFModalTransitionAnimator(modalViewController: detailViewController)
         
-        self.animator.dragable = true
-        self.animator.bounces = false
-        self.animator.behindViewAlpha = 0.5
-        self.animator.behindViewScale = 0.5
-        self.animator.transitionDuration = 0.5
-        self.animator.direction = ZFModalTransitonDirection.Right
+        animator.dragable = true
+        animator.bounces = false
+        animator.behindViewAlpha = 0.5
+        animator.behindViewScale = 0.5
+        animator.transitionDuration = 0.5
+        animator.direction = ZFModalTransitonDirection.Right
         
         //设置目标专场代理及转场模式
-        detailViewController.transitioningDelegate = self.animator
+        detailViewController.transitioningDelegate = animator
         detailViewController.modalPresentationStyle = .Custom
         
         //实施转场
         self.presentViewController(detailViewController, animated: true, completion: nil)
         
     }
-    var id = ""
+    
     
     
     
@@ -237,8 +263,9 @@ extension MainViewController: UITableViewDataSource, UITableViewDelegate {
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
         self.navigationController?.navigationBar.lt_setBackgroundColor(UIColor.clearColor())
+        
         tableView.reloadData()
-        print("viewwillappear")
+
     }
     
 }
@@ -250,7 +277,7 @@ extension MainViewController {
         
         let header = self.tableView.tableHeaderView as! ParallaxHeaderView
         header.layoutHeaderViewForScrollViewOffset(scrollView.contentOffset)
-        print(self.navigationController?.navigationBar.frame.size.height)
+//        print(self.navigationController?.navigationBar.frame.size.height)
         
         //滑动时更新顶部NavigationBar透明度
         let nvbHeight: CGFloat = 64

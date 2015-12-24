@@ -23,6 +23,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         
         clearLatestCache()
+        sideMenuData()
         mainData()
         //创建一个已查看新闻的id数组
         if NSUserDefaults.standardUserDefaults().objectForKey("newsID") == nil {
@@ -30,7 +31,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             let newsID: [String] = []
             NSUserDefaults.standardUserDefaults().setObject(newsID, forKey: "newsID")
         }
-        sideMenuData()
+        
         
         
         return true
@@ -43,13 +44,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         //获取最近的新闻（包含顶部轮播数据）
         Alamofire.request(.GET, "http://news-at.zhihu.com/api/4/news/latest").responseJSON { (data: Response<AnyObject, NSError>) -> Void in
             
-            var jsonData = JSON(data: data.data!, options: NSJSONReadingOptions.MutableContainers, error: nil)
+            let jsonData = JSON(data: data.data!, options: NSJSONReadingOptions.MutableContainers, error: nil)
             
             //处理顶部轮播数据
             let topArray = jsonData["top_stories"].array!
             //            print("topArray count\(topArray.count)")
             //处理列表新闻数据
             let listArray = jsonData["stories"].array!
+            
             //            print("listArray count \(listArray.count)")
             
             for json in listArray {
@@ -71,7 +73,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                     self.coreDataStack.saveContext()
                 })
                 
+//                let imageData = NSData(contentsOfURL: NSURL(string: imageURL)!)
+//                list.image = UIImage(data: imageData!)
+//                self.coreDataStack.saveContext()
             }
+            //用来计数何时发送请求, 解决方式有待改进.
+            var x = 0
             
             for json in topArray {
                 
@@ -87,12 +94,36 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 top.id = id
                 top.title = title
                 
+                let count = topArray.count
+                
+                
                 
                 //通过imageURL获取图像数据
                 Alamofire.request(.GET, imageURL).responseData({ (data: Response<NSData, NSError>) -> Void in
                     top.image = UIImage(data: data.data!)
                     self.coreDataStack.saveContext()
+                    //
+                    x = x + 1
+                    if x == count {
+                        print("post notification")
+                        let center = NSNotificationCenter.defaultCenter()
+                        let notification = NSNotification(name: "top", object: self)
+                        center.postNotification(notification)
+                        
+                    }
+                    
                 })
+//                x = x + 1
+//                if x == count {
+//                    print("post notification")
+//                    let center = NSNotificationCenter.defaultCenter()
+//                    let notification = NSNotification(name: "top", object: self)
+//                    center.postNotification(notification)
+//                    
+//                }
+//                let imageData = NSData(contentsOfURL: NSURL(string: imageURL)!)
+//                top.image = UIImage(data: imageData!)
+//                self.coreDataStack.saveContext()
                 
             }
             
@@ -104,7 +135,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         Alamofire.request(.GET, "http://news-at.zhihu.com/api/4/themes").responseJSON { (data: Response<AnyObject, NSError>) -> Void in
             
             let jsonData = JSON(data: data.data!)
-            print(jsonData)
             
             
             let sideArray = jsonData["others"].array!
@@ -115,11 +145,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 let name = json["name"].string
                 let title = json["description"].string
                 let imageURL = json["thumbnail"].string
-                
-                print(id)
-                print(name)
-                print(title)
-                print(imageURL)
+//                
+//                print(id)
+//                print(name)
+//                print(title)
+//                print(imageURL)
                 
                 let sideEntity = NSEntityDescription.entityForName("Side", inManagedObjectContext: self.coreDataStack.context)
                 let side = Side(entity: sideEntity!, insertIntoManagedObjectContext: self.coreDataStack.context)
